@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+
+    <title>MNIST Flask Deep Learning API</title>
+
+    <style>
+
+        body {
+            font-family: Arial, sans-serif;
+            background: #f2f2f2;
+            text-align: center;
+            padding: 50px;
+        }
+
+        .container {
+            width: 500px;
+            margin: auto;
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
+        }
+
+        h1 {
+            color: #333;
+        }
+
+        p {
+            color: #555;
+        }
+
+        input {
+            margin: 20px;
+        }
+
+        button {
+            padding: 12px 25px;
+            border: none;
+            border-radius: 6px;
+            background: #333;
+            color: white;
+            cursor: pointer;
+            font-size: 16px;
+        }
+
+        button:hover {
+            background: #555;
+        }
+
+        #result {
+            margin-top: 25px;
+            font-size: 20px;
+        }
+
+    </style>
+
+</head>
+
+
+<body>
+
+<div class="container">
+
+    <h1>🔢 MNIST Digit Classifier</h1>
+
+    <p>Flask Deep Learning API</p>
+
+    <p>Upload an image of a handwritten digit.</p>
+
+    <form id="predictionForm">
+
+        <input
+            type="file"
+            id="image"
+            name="image"
+            accept="image/*"
+            required
+        >
+
+        <br>
+
+        <button type="submit">
+            Predict Digit
+        </button>
+
+    </form>
+
+    <div id="result"></div>
+
+</div>
+
+
+<script>
+
+document.getElementById("predictionForm")
+.addEventListener("submit", async function(event) {
+
+    event.preventDefault();
+
+    const fileInput =
+        document.getElementById("image");
+
+    const formData = new FormData();
+
+    formData.append(
+        "image",
+        fileInput.files[0]
+    );
+
+    document.getElementById("result").innerHTML =
+        "Predicting...";
+
+    try {
+
+        const response = await fetch(
+            "/predict",
+            {
+                method: "POST",
+                body: formData
+            }
+        );
+
+        const result =
+            await response.json();
+
+        if (result.status === "success") {
+
+            document.getElementById("result")
+            .innerHTML =
+                "<b>Predicted Digit:</b> " +
+                result.prediction +
+                "<br><br>" +
+                "<b>Confidence:</b> " +
+                result.confidence +
+                "%";
+
+        } else {
+
+            document.getElementById("result")
+            .innerHTML =
+                "<b>Error:</b> " +
+                result.error;
+
+        }
+
+    } catch (error) {
+
+        document.getElementById("result")
+        .innerHTML =
+            "<b>Error:</b> " +
+            error;
+
+    }
+
+});
+
+</script>
+
+</body>
+
+</html>
